@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="BindingFXML"
+            prefHeight="400.0" prefWidth="600.0">
+    <top>
+        <Button text="Cancel" id="cancelBtn" fx:id="cancelBtn" managed="${cancelBtn.visible}"/>
+    </top>
+    <center>
+        <Button text="Ok" fx:id="okBtn" onAction="#okHandler"></Button>
+    </center>
+    <left>
+        <fx:include source="MyControl.fxml"></fx:include>
+    </left>
+    <stylesheets>
+        <URL value="@MyStyle.css"/>
+    </stylesheets>
+</BorderPane>
