@@ -54,6 +54,12 @@ public class Main {
                     System.out.println("sourceImage.getWidth() = " + sourceImage.getWidth());
                     System.out.println("sourceImage.getHeight() = " + sourceImage.getHeight());
                     System.out.println("sourceImage.isGrayscale() = " + sourceImage.isGrayscale());
+                    System.out.println("seriesID = " + getTagInformation(TagFromName.SeriesInstanceUID));
+                    System.out.println("studyID = " + getTagInformation(TagFromName.StudyInstanceUID));
+                    System.out.println("Image orientation = " + getTagInformation(TagFromName.ImageOrientationPatient));
+                    System.out.println("Image position = " + getTagInformation(TagFromName.ImagePositionPatient));
+                    System.out.println("Slice thickness = " + getTagInformation(TagFromName.SliceThickness));
+                    System.out.println("Patient ID = " + getTagInformation(TagFromName.PatientID));
                     BufferedImage bufferedImage = sourceImage.getBufferedImage();
                     final WritableImage writableImage = SwingFXUtils.toFXImage(bufferedImage, null);
                     Stage stage = new Stage();
@@ -73,7 +79,12 @@ public class Main {
                     CodeStringAttribute photoInterpret = (CodeStringAttribute) attributeList.get(TagFromName.PhotometricInterpretation);
                     String photoStr = photoInterpret.getDelimitedStringValuesOrEmptyString();
                     System.out.println("photoStr = " + photoStr.toLowerCase());
-
+                    final UnsignedShortAttribute rowsAttr = (UnsignedShortAttribute) attributeList.get(TagFromName.Rows);
+                    final short rows = rowsAttr.getShortValues()[0];
+                    final UnsignedShortAttribute columnsAttr = (UnsignedShortAttribute) attributeList.get(TagFromName.Columns);
+                    final short columns = columnsAttr.getShortValues()[0];
+                    System.out.println("columns = " + columns);
+                    System.out.println("rows = " + rows);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (DicomException e) {

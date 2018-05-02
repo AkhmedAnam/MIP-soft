@@ -2,12 +2,10 @@ package ru.nsi.mipsoft.model.api;
 
 public interface IDicomFileParser {
 
-    ImageSliceOrientation getImageToPatientOrientation();
+    String getStudyID();
 
-    int[] getPixelData();
+    String getSeriesID();
 
-    int getImagePerFileCount();
-
-    int getImagePixelWidth();
+    String getPersonID();
 
 }

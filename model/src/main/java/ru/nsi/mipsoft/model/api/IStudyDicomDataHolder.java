@@ -10,8 +10,4 @@ public interface IStudyDicomDataHolder extends IObjectWithID<String> {
 
     ISeriesDicomDataHolder getSeriesDicomDataHolder(String seriesID);
 
-    void addImage(String seriesID, SourceImage image);
-
-    void addAllImages(String seriesID, SourceImage...images);
-
 }
