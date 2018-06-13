@@ -6,16 +6,16 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class StudyDicomDataHolder implements IStudyDicomDataHolder {
+public class StudyDicomDataHolderImpl implements IStudyDicomDataHolder {
 
 
-    public StudyDicomDataHolder(String id, Map<String, List<String>> seriesToImagesPathListMap) throws IOException, DicomException {
+    public StudyDicomDataHolderImpl(String id, Map<String, List<String>> seriesToImagesPathListMap) throws IOException, DicomException {
         ID = id;
         allSeries = new ArrayList<>();
         for (Map.Entry<String, List<String>> stringListEntry : seriesToImagesPathListMap.entrySet()) {
             final String seriesID = stringListEntry.getKey();
             final List<String> imagesPathForTheSeries = stringListEntry.getValue();
-            SeriesDicomDataHolderImpl seriesDicomDataHolder = new SeriesDicomDataHolderImpl(seriesID, imagesPathForTheSeries);
+            DicomSeriesDataHolder seriesDicomDataHolder = new DicomSeriesDataHolder(seriesID, imagesPathForTheSeries);
             allSeries.add(seriesDicomDataHolder);
         }
     }
@@ -29,7 +29,7 @@ public class StudyDicomDataHolder implements IStudyDicomDataHolder {
 
     @Override
     public ISeriesDicomDataHolder getSeriesDicomDataHolder(String seriesID) {
-        final Optional<SeriesDicomDataHolderImpl> result = allSeries.stream()
+        final Optional<DicomSeriesDataHolder> result = allSeries.stream()
                 .filter(iSeriesDicomDataHolder -> seriesID.equals(iSeriesDicomDataHolder.getID()))
                 .findFirst();
         return result.isPresent() ? result.get() : null;
@@ -41,5 +41,5 @@ public class StudyDicomDataHolder implements IStudyDicomDataHolder {
     }
 
     private final String ID;
-    private final List<SeriesDicomDataHolderImpl> allSeries;
+    private final List<DicomSeriesDataHolder> allSeries;
 }

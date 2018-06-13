@@ -24,16 +24,16 @@ public class DicomImagePixelIntesityCorrector {
             throw new IllegalArgumentException(msg);
         }
         int[] toReturn = new int[sourcePixelData.length];
-        final float maxValueFloat = (float) maxPossibleValue;
-        final float windowLevelValue = windowLevelPercent.getPercentOfValue(maxPossibleValue);
-        final float maxWindowWidth = Math.min(maxValueFloat - windowLevelValue, windowLevelValue);
-        final float windowWidthValue = windowWidthPercent.getPercentOfValue(maxWindowWidth);
-        final float windowHalfWidth = windowWidthValue * 0.5F;
-        final float minCurrVal = windowLevelValue - windowHalfWidth;
+        final double maxValueFloat = (double) maxPossibleValue;
+        final double windowLevelValue = windowLevelPercent.getPercentOfValue(maxPossibleValue);
+        final double maxWindowWidth = Math.min(maxValueFloat - windowLevelValue, windowLevelValue);
+        final double windowWidthValue = windowWidthPercent.getPercentOfValue(maxWindowWidth);
+        final double windowHalfWidth = windowWidthValue * 0.5F;
+        final double minCurrVal = windowLevelValue - windowHalfWidth;
 
         for (int i = 0; i < sourcePixelData.length; i++) {
             final float sourcePixelIntensity = (float) sourcePixelData[i];
-            float targetPixelIntensity = (sourcePixelIntensity - minCurrVal) * normolizedValue / windowWidthValue;
+            double targetPixelIntensity = (sourcePixelIntensity - minCurrVal) * normolizedValue / windowWidthValue;
             if (targetPixelIntensity < 0) {
                 targetPixelIntensity = 0;
             } else if (targetPixelIntensity > normolizedValue) {

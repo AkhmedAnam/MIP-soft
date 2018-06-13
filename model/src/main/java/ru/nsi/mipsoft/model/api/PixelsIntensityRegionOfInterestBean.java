@@ -7,12 +7,14 @@ package ru.nsi.mipsoft.model.api;
  * Описание параметров смотреть в документации к конструктору этого класса {@link #PixelsIntensityRegionOfInterestBean(int, Percent, Percent, int)}.
  */
 public class PixelsIntensityRegionOfInterestBean {
+
+    public static final int NORMALIZED_VALUE_DEFUALT = 255;
     /**
      * @param maxPossibleValue максимально возможное значение интенсивности пикселя. Определяется DICOM-тегом BitsStored.
      *                (смотреть описание метода {@link DicomImageWrapper#getBitsStored()})
      * @param windowWidthPercent ширина окна интенсивности, заданная в процентах относительно максимально возможной ширины (которая определяется уровнем окна)
      * @param windowLevelPercent уровень окна, заданный относительно максимальной и минимальной возможной интенсивности
-     * @param normolizedValue нормирововчное значение. Предполагается использовать значение равное 256 (число градаций серого)
+     * @param normolizedValue нормирововчное значение. Предполагается использовать значение равное 255 (число градаций серого для 8-битного пикселя)
      */
     public PixelsIntensityRegionOfInterestBean(
             int maxPossibleValue,

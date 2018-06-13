@@ -2,6 +2,7 @@ package ru.nsi.mipsoft.model.api;
 
 import com.pixelmed.dicom.*;
 import com.pixelmed.display.SourceImage;
+import com.sun.org.apache.xml.internal.utils.AttList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.*;
 
@@ -12,7 +13,9 @@ import java.io.IOException;
 
 public class DicomImageWrapper {
 
-    public DicomImageWrapper(AttributeList attributeList) throws DicomException {
+    public DicomImageWrapper(File dicomFile) throws DicomException, IOException {
+        final AttributeList attributeList = new AttributeList();
+        attributeList.read(dicomFile);
         if (attributeList.isEmpty()) {
             throw new DicomException(
                     ERROR_MESSAGE_PREFIX + "Попытка создания объекта типа DicomImageWrapper с помощью пустого объекта типа AttributeList"
@@ -63,12 +66,25 @@ public class DicomImageWrapper {
         final String[] splitStrings = pixelSpacingStr.split("\\\\");
         if(splitStrings.length != 2){
             throw new DicomException( ERROR_MESSAGE_PREFIX + "неверный формат строки для атрибута Pixel Spacing."
-            + " Ожидалась строка вида 'pixelWidthInMm\\pixelHeightInMm'. Переданная строка: " + pixelSpacingStr);
+                    + " Ожидалась строка вида 'pixelWidthInMm\\pixelHeightInMm'. Переданная строка: " + pixelSpacingStr);
         }
         final String pixelWidthInMmStr = splitStrings[0];
         final String pixelHeightInMmStr = splitStrings[1];
         pixelWidthInMm = Float.parseFloat(pixelWidthInMmStr);
         pixelHeightInMm = Float.parseFloat(pixelHeightInMmStr);
+        final DecimalStringAttribute imgPosStr = (DecimalStringAttribute) attributeList.get(TagFromName.ImagePositionPatient);
+        final String[] split = imgPosStr.getDelimitedStringValuesOrEmptyString().split("\\\\");
+        if(split.length != 3){
+            throw new DicomException(ERROR_MESSAGE_PREFIX + "неверный формат аттрибута ImagePosition (Patient)");
+        }
+        double imgPosX = Double.parseDouble(split[0]);
+        double imgPosY = Double.parseDouble(split[1]);
+        double imgPosZ = Double.parseDouble(split[2]);
+        this.imagePositionPatient = new ImagePosition(imgPosX, imgPosY, imgPosZ);
+    }
+
+    public DicomImageWrapper(String dicomFilePath) throws IOException, DicomException {
+        this(new File(dicomFilePath));
     }
 
     public static void main(String[] args) throws IOException {
@@ -123,11 +139,21 @@ public class DicomImageWrapper {
         return imageSliceOrientation;
     }
 
+    public ImagePosition getImagePositionPatient() {
+        return imagePositionPatient;
+    }
+
     public WritableImage getWritableImage(PixelsIntensityRegionOfInterestBean intensityRegionOfInterestBean){
         BufferedImage tempBuffImg = new BufferedImage(imagePixelWidth, imagePixelHeight, BufferedImage.TYPE_BYTE_GRAY);
         final int[] correctedPixelsIntensity = DicomImagePixelIntesityCorrector.getCorrectedPixelsIntensity(pixelData, intensityRegionOfInterestBean);
         tempBuffImg.getRaster().setPixels(0, 0, imagePixelWidth, imagePixelHeight, correctedPixelsIntensity);
         return SwingFXUtils.toFXImage(tempBuffImg, null);
+    }
+
+    public WritableImage getWritableImage(){
+        BufferedImage tempBI = new BufferedImage(imagePixelWidth, imagePixelHeight, BufferedImage.TYPE_BYTE_GRAY);
+        tempBI.getRaster().setPixels(0, 0, imagePixelWidth, imagePixelHeight, pixelData);
+        return SwingFXUtils.toFXImage(tempBI, null);
     }
 
     /**
@@ -154,5 +180,6 @@ public class DicomImageWrapper {
     private final float pixelHeightInMm;
     private final ImageSliceOrientation imageSliceOrientation;
     private final DicomImageModality imageModality;
+    private final ImagePosition imagePositionPatient;
     private static final String ERROR_MESSAGE_PREFIX = "При создании объекта DicomImageWrapper произошла ошибка: ";
 }

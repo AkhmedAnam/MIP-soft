@@ -25,5 +25,18 @@ public class DicomFileParserImpl implements IDicomFileParser {
         return Attribute.getDelimitedStringValuesOrEmptyString(attributeList, TagFromName.PatientID);
     }
 
+    @Override
+    public ImageSliceOrientation getImageSliceOrientation() {
+        String patientOrientation =
+                Attribute.getDelimitedStringValuesOrEmptyString(attributeList, TagFromName.ImageOrientationPatient);
+        return ImageSliceOrientation.getImageToPatientOrientationFromString(patientOrientation);
+    }
+
+    @Override
+    public DicomImageModality getDicomImageModality() {
+        final String modalityStr = Attribute.getDelimitedStringValuesOrEmptyString(attributeList, TagFromName.Modality);
+        return DicomImageModality.valueOf(modalityStr);
+    }
+
     private final AttributeList attributeList;
 }

@@ -2,44 +2,44 @@ package ru.nsi.mipsoft.model.api;
 
 public class Percent {
 
-    public static class PersantageException extends RuntimeException{
-        public PersantageException() {
+    public static class PercentageException extends RuntimeException{
+        public PercentageException() {
             super();
         }
 
-        public PersantageException(String message, Throwable cause) {
+        public PercentageException(String message, Throwable cause) {
             super(message, cause);
         }
 
-        public PersantageException(String message) {
+        public PercentageException(String message) {
             super(message);
         }
 
-        protected PersantageException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        protected PercentageException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
             super(message, cause, enableSuppression, writableStackTrace);
         }
 
-        public PersantageException(Throwable cause) {
+        public PercentageException(Throwable cause) {
             super(cause);
         }
     }
 
-    public Percent(float value) {
-        if(value < 0 || value > 1.F){
+    public Percent(double value) {
+        if(value < 0 || value > 1){
             String message = "Ошибка при создании объекта типа Percent:" +
                     " параметр переданный в конструктор должен лежать в диапазоне [0.0; 1.0]";
-            throw new PersantageException(message);
+            throw new PercentageException(message);
         }
         this.value = value;
     }
 
-    public <T extends Number> float getPercentOfValue(T value){
-        return this.value * value.floatValue();
+    public <T extends Number> double getPercentOfValue(T value){
+        return this.value * value.doubleValue();
     }
 
-    public float getValue() {
+    public double getValue() {
         return value;
     }
 
-    private final float value;
+    private final double value;
 }

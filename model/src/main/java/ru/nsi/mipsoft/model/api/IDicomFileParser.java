@@ -8,4 +8,8 @@ public interface IDicomFileParser {
 
     String getPersonID();
 
+    ImageSliceOrientation getImageSliceOrientation();
+
+    DicomImageModality getDicomImageModality();
+
 }

@@ -1,4 +1,4 @@
-package ru.nsi.mipsoft.proxy;
+package ru.nsi.mipsoft.model.proxy;
 
 public interface ProxyExecutor {
     void schedule(Call call, boolean onlyIfIdle);

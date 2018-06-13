@@ -28,10 +28,6 @@ public class Main {
             @Override
             public void run() {
                 FileChooser fileChooser = new FileChooser();
-                FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter(
-                        "DICOM files",
-                        "*dcm", "*dicom");
-                fileChooser.setSelectedExtensionFilter(extensionFilter);
                 fileChooser.setTitle("Выберете DICOM файл");
                 File file = fileChooser.showOpenDialog(null);
                 attributeList = new AttributeList();
@@ -85,6 +81,12 @@ public class Main {
                     final short columns = columnsAttr.getShortValues()[0];
                     System.out.println("columns = " + columns);
                     System.out.println("rows = " + rows);
+                    final DecimalStringAttribute imagePos = (DecimalStringAttribute) attributeList.get(TagFromName.ImagePositionPatient);
+                    final String imgPos = imagePos.getDelimitedStringValuesOrEmptyString();
+                    final String[] split = imgPos.split("\\\\");
+                    System.out.println("imagePos = " + String.format("[%s, %s, %s]", split[0], split[1], split[2]));
+                    final DecimalStringAttribute sliceLocation = (DecimalStringAttribute) attributeList.get(TagFromName.SliceLocation);
+                    System.out.println("sliceLocation = " + sliceLocation.getDelimitedStringValuesOrEmptyString());
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (DicomException e) {

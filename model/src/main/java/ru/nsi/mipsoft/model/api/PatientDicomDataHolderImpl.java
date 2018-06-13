@@ -14,7 +14,7 @@ public class PatientDicomDataHolderImpl implements IPatientDicomDataHolder {
         for (Map.Entry<String, Map<String, List<String>>> studyIdToSeriesMap : patientMap.entrySet()) {
             final String studyId = studyIdToSeriesMap.getKey();
             final Map<String, List<String>> seriesMap = studyIdToSeriesMap.getValue();
-            StudyDicomDataHolder studyDicomDataHolder = new StudyDicomDataHolder(studyId, seriesMap);
+            StudyDicomDataHolderImpl studyDicomDataHolder = new StudyDicomDataHolderImpl(studyId, seriesMap);
             allStudies.add(studyDicomDataHolder);
         }
     }
@@ -28,7 +28,7 @@ public class PatientDicomDataHolderImpl implements IPatientDicomDataHolder {
 
     @Override
     public IStudyDicomDataHolder getStudyDicomDataHolder(String studyID) {
-        final Optional<StudyDicomDataHolder> resultOptional = allStudies.stream()
+        final Optional<StudyDicomDataHolderImpl> resultOptional = allStudies.stream()
                 .filter(iStudyDicomDataHolder -> studyID.equals(iStudyDicomDataHolder.getID()))
                 .findFirst();
         return resultOptional.isPresent() ? resultOptional.get() : null;
@@ -40,5 +40,5 @@ public class PatientDicomDataHolderImpl implements IPatientDicomDataHolder {
     }
 
     private final String ID;
-    private final List<StudyDicomDataHolder> allStudies;
+    private final List<StudyDicomDataHolderImpl> allStudies;
 }

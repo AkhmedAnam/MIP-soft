@@ -1,4 +1,4 @@
-package ru.nsi.mipsoft.proxy;
+package ru.nsi.mipsoft.model.proxy;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
