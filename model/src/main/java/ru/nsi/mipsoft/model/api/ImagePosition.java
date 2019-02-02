@@ -2,25 +2,25 @@ package ru.nsi.mipsoft.model.api;
 
 public class ImagePosition {
 
-    public ImagePosition(double x, double y, double z) {
+    public ImagePosition(float x, float y, float z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
-    public double getX() {
+    public float getX() {
         return x;
     }
 
-    public double getY() {
+    public float getY() {
         return y;
     }
 
-    public double getZ() {
+    public float getZ() {
         return z;
     }
 
-    private final double x;
-    private final double y;
-    private final double z;
+    private final float x;
+    private final float y;
+    private final float z;
 }

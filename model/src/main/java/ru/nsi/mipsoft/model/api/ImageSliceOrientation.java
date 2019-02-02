@@ -16,7 +16,7 @@ public enum ImageSliceOrientation {
             return myOrientation ;
         }
     },
-    SAGITTALL {
+    SAGITTAL {
         private final DicomImageToPatientOrientation myOrientation =
                 new DicomImageToPatientOrientation(
                         new Vector3D<>(0.F, 0.F, 1.F),

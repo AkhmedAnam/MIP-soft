@@ -42,6 +42,7 @@ public class ImageViewTest extends Application {
         });
         imageView.fitWidthProperty().bind(borderPane.widthProperty());
         imageView.fitHeightProperty().bind(borderPane.heightProperty());
+
         Scene scene = new Scene(borderPane, 500, 500);
         primaryStage.setScene(scene);
         primaryStage.show();
