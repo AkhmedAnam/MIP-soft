@@ -6,6 +6,7 @@ import com.sun.istack.internal.NotNull;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import kotlin.ranges.IntRange;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,13 +20,16 @@ public class DicomSeriesDataHolder implements ISeriesDicomDataHolder {
     private boolean initialized = false;
     private final List<String> imagesPath;
     private final String ID;
-    private final TreeSet<DicomImageWrapper> sourceAxialImages = new TreeSet<>();
+    private final List<DicomImageWrapper> sourceAxialImages = new LinkedList<>();
     private DicomImageModality imageModality = null;
     private final ObjectProperty<DicomImageWrapper> axialImageProperty = new SimpleObjectProperty<>();
     private final ObjectProperty<DicomImageWrapper> coronalImageProperty = new SimpleObjectProperty<>();
     private final ObjectProperty<DicomImageWrapper> saggitalImageProperty = new SimpleObjectProperty<>();
     private float sliceThickness;
-    private DicomImageWrapper[] cachedSrcAxialArr;
+//    private DicomImageWrapper[] cachedSrcAxialArr;
+    private IndexRange axialIndexRange = new IndexRange();
+    private IndexRange saggitalIndexRange = new IndexRange();
+    private IndexRange coronalIndexRange = new IndexRange();
 
     public DicomSeriesDataHolder(@NotNull String id, @NotNull List<String> imagesPath){
         this.imagesPath = imagesPath;
@@ -103,8 +107,14 @@ public class DicomSeriesDataHolder implements ISeriesDicomDataHolder {
 
             sourceAxialImages.add(imageWrapper);
         }
-        cachedSrcAxialArr = ((DicomImageWrapper[]) sourceAxialImages.toArray());
-        setAxialImageProperty(sourceAxialImages.first());
+//        cachedSrcAxialArr = ((DicomImageWrapper[]) sourceAxialImages.toArray());
+        final DicomImageWrapper first = sourceAxialImages.get(0);
+        final int imagePixelWidth = first.getImagePixelWidth();
+        final int imagePixelHeight = first.getImagePixelHeight();
+        axialIndexRange.setEndIndex(sourceAxialImages.size());
+        saggitalIndexRange.setEndIndex(imagePixelWidth);
+        coronalIndexRange.setEndIndex(imagePixelHeight);
+        setAxialImageProperty(first);
         synchImagesFromAxial(0, 0);
         initialized = true;
     }
@@ -139,7 +149,7 @@ public class DicomSeriesDataHolder implements ISeriesDicomDataHolder {
         final float axialPixelWidthInMm = currentAxialImage.getPixelWidthInMm();
         final float axial_minimal_x = axialImagePositionPatient.getX();
         final float axial_minimal_y = axialImagePositionPatient.getY();
-        final float axial_minimal_Z = sourceAxialImages.first().getImagePositionPatient().getZ();
+        final float axial_minimal_Z = sourceAxialImages.get(0).getImagePositionPatient().getZ();
         final int axialImagesSize = sourceAxialImages.size();
 
         int frameWidth = axialImagesSize;
@@ -151,7 +161,7 @@ public class DicomSeriesDataHolder implements ISeriesDicomDataHolder {
         );
         int[] dstData = new int[frameWidth * frameHeight];
         MinMaxPair minMaxPair = SlicesDataTransformationKt.fillDistinationDataWithAxialData(
-                cachedSrcAxialArr,
+                sourceAxialImages,
                 dstData,
                 axial_x,
                 axial_y,
@@ -187,7 +197,7 @@ public class DicomSeriesDataHolder implements ISeriesDicomDataHolder {
         final float axialPixelWidthInMm = currentAxialImage.getPixelWidthInMm();
         final int axialImagesSize = sourceAxialImages.size();
 
-        final DicomImageWrapper lastAxialImage = sourceAxialImages.last();
+        final DicomImageWrapper lastAxialImage = sourceAxialImages.get(sourceAxialImages.size() - 1);
         final ImagePosition lastAxialImagePosition = lastAxialImage.getImagePositionPatient();
         final float last_axial_x = lastAxialImagePosition.getX();
         final float last_axial_y = lastAxialImagePosition.getY();
@@ -201,7 +211,7 @@ public class DicomSeriesDataHolder implements ISeriesDicomDataHolder {
         int frameHeight = axialImagesSize;
         int[] dstData = new int[frameHeight * frameWidth];
         MinMaxPair minMaxPair = SlicesDataTransformationKt.fillDistinationDataWithAxialData(
-                cachedSrcAxialArr,
+                sourceAxialImages,
                 dstData,
                 axial_x,
                 axial_y,
@@ -231,7 +241,7 @@ public class DicomSeriesDataHolder implements ISeriesDicomDataHolder {
 
 
     private void synchImagesFromSaggital(int xCoord, int yCoord) {
-        setAxialImageProperty(cachedSrcAxialArr[yCoord]);
+        setAxialImageProperty(sourceAxialImages.get(yCoord));
 
         //region setting Coronal slice
         int axial_x = 0;
@@ -241,7 +251,7 @@ public class DicomSeriesDataHolder implements ISeriesDicomDataHolder {
     }
 
     private void synchImagesFromCoronal(int xCoord, int yCoord) {
-        setAxialImageProperty(cachedSrcAxialArr[yCoord]);
+        setAxialImageProperty(sourceAxialImages.get(yCoord));
 
         //region setting Sagittal slice
         int axial_x = xCoord;
@@ -252,32 +262,62 @@ public class DicomSeriesDataHolder implements ISeriesDicomDataHolder {
 
     @Override
     public boolean nextAxialImage() {
-        return false;
+        if(!axialIndexRange.nextIndexInTheRange()){
+            return false;
+        }
+        axialIndexRange.increement();
+        setAxialImageProperty(sourceAxialImages.get(axialIndexRange.getCurrentIndex()));
+        return true;
     }
 
     @Override
     public boolean nextSaggitalImage() {
-        return false;
+        if(!saggitalIndexRange.nextIndexInTheRange()){
+            return false;
+        }
+        saggitalIndexRange.increement();
+        synchSaggitalFromAxial(saggitalIndexRange.getCurrentIndex(), 0);
+        return true;
     }
 
     @Override
     public boolean nextCoronalImage() {
-        return false;
+        if (!coronalIndexRange.nextIndexInTheRange()) {
+            return false;
+        }
+        coronalIndexRange.increement();
+        synchCoronalFromAxial(0, coronalIndexRange.getCurrentIndex());
+        return true;
     }
 
     @Override
     public boolean previousAxialImage() {
-        return false;
+        if(!axialIndexRange.previousIndexInTheRange()){
+            return false;
+        }
+        axialIndexRange.decreement();
+        setAxialImageProperty(sourceAxialImages.get(axialIndexRange.getCurrentIndex()));
+        return true;
     }
 
     @Override
     public boolean previousSaggitalImage() {
-        return false;
+        if(!saggitalIndexRange.previousIndexInTheRange()){
+            return false;
+        }
+        saggitalIndexRange.decreement();
+        synchSaggitalFromAxial(saggitalIndexRange.getCurrentIndex(), 0);
+        return true;
     }
 
     @Override
     public boolean previousCoronalImage() {
-        return false;
+        if (!coronalIndexRange.previousIndexInTheRange()) {
+            return false;
+        }
+        coronalIndexRange.decreement();
+        synchCoronalFromAxial(0, coronalIndexRange.getCurrentIndex());
+        return true;
     }
 
     @Override

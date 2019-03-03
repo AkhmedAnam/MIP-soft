@@ -1,10 +1,11 @@
 package ru.nsi.mipsoft.model.api
 
+import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
 fun fillDistinationDataWithAxialData(
-        srcAxialArr: Array<DicomImageWrapper>,
+        srcAxialArr: List<DicomImageWrapper>,
         dstData: IntArray,
         axial_x: Int,
         axial_y: Int,

@@ -6,6 +6,7 @@ import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -30,14 +31,14 @@ public class DrawShapesOnPaneTest extends Application {
     {
         xLine1.setStrokeWidth(3);
         xLine1.setStroke(Color.RED);
-        xLine1.setOpacity(0.5);
-        xLine2.setOpacity(0.5);
+        xLine1.setOpacity(0.3);
+        xLine2.setOpacity(0.3);
         xLine2.setStrokeWidth(3);
         xLine2.setStroke(Color.RED);
         xLine2.endXProperty().bind(pane.widthProperty());
         yLine1.setStrokeWidth(3);
-        yLine1.setOpacity(.5);
-        yLine2.setOpacity(.5);
+        yLine1.setOpacity(.3);
+        yLine2.setOpacity(.3);
         yLine1.setStroke(Color.BLUE);
         yLine2.setStrokeWidth(3);
         yLine2.setStroke(Color.BLUE);
